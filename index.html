@@ -37,28 +37,9 @@
         .art-glow { position: absolute; top: 10%; left: 5%; width: 90%; height: 90%; background: inherit; filter: blur(25px); opacity: 0.6; z-index: 1; transition: opacity 0.3s; }
 
         /* EMOJI DORMINDO BLINDADO */
-        #offline-emoji {
-            display: flex; /* Já nasce visível no carregamento */
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            font-size: 110px; 
-            z-index: 3;
-            animation: respiraDormindo 4s ease-in-out infinite;
-        }
-        .bg-emoji-offline {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-        }
-        @keyframes respiraDormindo {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-12px) scale(1.05); }
-            100% { transform: translateY(0px) scale(1); }
-        }
+        #offline-emoji { display: flex; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; width: 100%; height: 100%; font-size: 110px; z-index: 3; animation: respiraDormindo 4s ease-in-out infinite; }
+        .bg-emoji-offline { background: rgba(0, 0, 0, 0.2); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        @keyframes respiraDormindo { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-12px) scale(1.05); } 100% { transform: translateY(0px) scale(1); } }
 
         h2 { margin: 0; font-size: 1.5rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; }
         p { margin: 6px 0 0 0; color: #a0a0a0; font-size: 1rem; font-weight: 600; }
@@ -72,6 +53,24 @@
         .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); box-shadow: 0 8px 20px rgba(220, 39, 67, 0.2); }
         .insta-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 25px rgba(220, 39, 67, 0.4); filter: brightness(1.1); }
         .insta-btn svg { fill: white; width: 24px; height: 24px; }
+
+        /* ASSINATURA / MARCA D'ÁGUA */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 25px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.25);
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .watermark:hover {
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -102,57 +101,51 @@
             </a>
             <a href="https://www.instagram.com/oggdann/" target="_blank" class="btn insta-btn">
                 <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                @oggdann
+                Instagram
             </a>
         </div>
     </div>
 
+    <a href="https://www.instagram.com/oggdann/" target="_blank" class="watermark">
+        by @oggdann
+    </a>
+
     <script>
-        // Função limpa pra ativar o modo "Ouvindo"
         function setOnline(data) {
             document.getElementById('status-box').classList.remove('offline');
             document.getElementById('status-text').innerText = "Ouvindo agora";
-            
             document.getElementById('album-art').style.display = 'block';
             document.getElementById('offline-emoji').style.display = 'none';
             document.getElementById('art-wrapper').classList.remove('bg-emoji-offline');
-            
             document.getElementById('album-art').src = data.albumImageUrl;
             document.getElementById('art-glow').style.background = `url(${data.albumImageUrl}) center/cover no-repeat`;
-            
             document.getElementById('title').innerText = data.title;
             document.getElementById('artist').innerText = data.artist;
             document.getElementById('song-link').href = data.songUrl;
         }
 
-        // Função limpa pra ativar o modo "Dormindo"
         function setOffline() {
             document.getElementById('status-box').classList.add('offline');
             document.getElementById('status-text').innerText = "Offline no momento";
-            
             document.getElementById('album-art').style.display = 'none';
             document.getElementById('offline-emoji').style.display = 'flex';
             document.getElementById('art-wrapper').classList.add('bg-emoji-offline');
-            
             document.getElementById('art-glow').style.background = "none";
-            
             document.getElementById('title').innerText = "Nenhuma música";
             document.getElementById('artist').innerText = "O silêncio também é música";
-            document.getElementById('song-link').href = "https://open.spotify.com/"; // Link base seguro pra não dar erro
+            document.getElementById('song-link').href = "https://open.spotify.com/";
         }
 
         async function getSpotify() {
             try {
                 const res = await fetch('/api/musica');
                 const data = await res.json();
-                
                 if (data.isPlaying) {
                     setOnline(data);
                 } else {
                     setOffline();
                 }
             } catch (err) {
-                // Failsafe: se a conexão falhar, vai pro modo dormindo com segurança
                 console.error("Erro na busca:", err);
                 setOffline(); 
             }
