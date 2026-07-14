@@ -14,24 +14,34 @@
         .status { margin-bottom: 15px; font-size: 0.9rem; color: #1db954; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
         a { text-decoration: none; color: inherit; }
         .offline { color: #888; }
+        /* NOVOS ESTILOS DO INSTAGRAM */
+        .social-container { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .insta-handle { color: #b3b3b3; font-size: 0.9rem; font-weight: bold; }
+        .insta-btn { display: inline-flex; align-items: center; padding: 10px 20px; background-color: #e4405f; color: white; border-radius: 25px; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s; }
+        .insta-btn:hover { background-color: #d83a53; }
     </style>
 </head>
 <body>
     <a id="song-link" href="#" target="_blank">
         <div class="card" id="spotify-card">
             <div class="status" id="status-text">Carregando...</div>
-            <img id="album-art" src="https://i.scdn.co/image/ab6761610000e5ebb2b3781297d21b444b023fbc" alt="Capa">
+            <img id="album-art" src="" alt="Capa">
             <h2 id="title">Procurando música</h2>
             <p id="artist">Aguarde...</p>
+            
+            <div class="social-container">
+                <span class="insta-handle">@oggdann</span>
+                <a href="https://www.instagram.com/oggdann/" target="_blank" class="insta-btn">
+                  📸 Instagram
+                </a>
+            </div>
         </div>
     </a>
-
     <script>
         async function getSpotify() {
             try {
                 const res = await fetch('/api/musica');
                 const data = await res.json();
-                
                 if (data.isPlaying) {
                     document.getElementById('status-text').innerText = "🎶 Ouvindo agora";
                     document.getElementById('status-text').classList.remove('offline');
@@ -49,7 +59,7 @@
             } catch (err) { console.error(err); }
         }
         getSpotify();
-        setInterval(getSpotify, 5000); // Atualiza o site sozinho a cada 5 segundos
+        setInterval(getSpotify, 5000); // Atualiza a cada 5 segundos
     </script>
 </body>
 </html>
