@@ -8,35 +8,69 @@
         body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); width: 320px; transition: transform 0.3s; }
         .card:hover { transform: translateY(-5px); }
+        
+        .clickable-area { text-decoration: none; color: inherit; display: block; cursor: pointer; }
+        
         img { width: 250px; height: 250px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); object-fit: cover; margin-bottom: 20px; }
         h2 { margin: 0; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         p { margin: 5px 0 0 0; color: #b3b3b3; font-size: 1rem; }
         .status { margin-bottom: 15px; font-size: 0.9rem; color: #1db954; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-        a { text-decoration: none; color: inherit; }
         .offline { color: #888; }
-        /* NOVOS ESTILOS DO INSTAGRAM */
-        .social-container { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .insta-handle { color: #b3b3b3; font-size: 0.9rem; font-weight: bold; }
-        .insta-btn { display: inline-flex; align-items: center; padding: 10px 20px; background-color: #e4405f; color: white; border-radius: 25px; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s; }
-        .insta-btn:hover { background-color: #d83a53; }
+        
+        /* BOTÃO DO INSTAGRAM PREMIUM */
+        .social-container {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: center;
+        }
+        .insta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3);
+        }
+        .insta-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(220, 39, 67, 0.5);
+            filter: brightness(1.1);
+        }
+        .insta-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
     </style>
 </head>
 <body>
-    <a id="song-link" href="#" target="_blank">
-        <div class="card" id="spotify-card">
+    <div class="card" id="spotify-card">
+        <!-- ÁREA CLICÁVEL DA MÚSICA -->
+        <a id="song-link" href="#" target="_blank" class="clickable-area">
             <div class="status" id="status-text">Carregando...</div>
             <img id="album-art" src="" alt="Capa">
             <h2 id="title">Procurando música</h2>
             <p id="artist">Aguarde...</p>
-            
-            <div class="social-container">
-                <span class="insta-handle">@oggdann</span>
-                <a href="https://www.instagram.com/oggdann/" target="_blank" class="insta-btn">
-                  📸 Instagram
-                </a>
-            </div>
+        </a>
+        
+        <!-- BOTÃO DO INSTAGRAM -->
+        <div class="social-container">
+            <a href="https://www.instagram.com/oggdann/" target="_blank" class="insta-btn">
+                <svg class="insta-icon" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+                @oggdann
+            </a>
         </div>
-    </a>
+    </div>
     <script>
         async function getSpotify() {
             try {
@@ -59,7 +93,7 @@
             } catch (err) { console.error(err); }
         }
         getSpotify();
-        setInterval(getSpotify, 5000); // Atualiza a cada 5 segundos
+        setInterval(getSpotify, 5000);
     </script>
 </body>
 </html>
