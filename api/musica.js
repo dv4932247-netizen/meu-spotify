@@ -5,14 +5,8 @@ export default async function handler(req, res) {
 
   const basic = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
 
-  // TRUQUE ANTI-CENSURA: Quebrando os links pra IA não sabotar
-  const url_token = 'https://' + 'accounts.spotify.com' + '/api/token';
-  const url_atual = 'https://' + 'api.spotify.com' + '/v1/me/player/currently-playing';
-  const url_recentes = 'https://' + 'api.spotify.com' + '/v1/me/player/recently-played';
-
   try {
-    // 1. Pega a chave de acesso nova
-    const tokenRes = await fetch(url_token, {
+    const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
         Authorization: `Basic ${basic}`,
@@ -26,50 +20,25 @@ export default async function handler(req, res) {
 
     const { access_token } = await tokenRes.json();
 
-    // 2. Tenta pegar a música que tá tocando AGORA
-    const songRes = await fetch(url_atual, {
+    const songRes = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    let currentlyPlaying = { isPlaying: false, title: "Nenhuma música", artist: "O silêncio também é música" };
-
-    if (songRes.status === 200) {
-      const song = await songRes.json();
-      if (song.item) {
-        currentlyPlaying = {
-          isPlaying: true,
-          title: song.item.name,
-          artist: song.item.artists.map((_artist) => _artist.name).join(', '),
-          albumImageUrl: song.item.album.images[0]?.url,
-          songUrl: song.item.external_urls.spotify,
-        };
-      }
+    if (songRes.status === 204 || songRes.status > 400) {
+      return res.status(200).json({ isPlaying: false });
     }
 
-    // 3. Puxa as últimas músicas que você ouviu
-    let recentlyPlayed = [];
-    const recentRes = await fetch(url_recentes, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
+    const song = await songRes.json();
+    if (!song.item) return res.status(200).json({ isPlaying: false });
 
-    if (recentRes.status === 200) {
-      const recentData = await recentRes.json();
-      // Pega só as 4 últimas pra não poluir o site
-      recentlyPlayed = recentData.items.slice(0, 4).map(item => ({
-        title: item.track.name,
-        artist: item.track.artists.map(_artist => _artist.name).join(', '),
-        albumImageUrl: item.track.album.images[0]?.url,
-        songUrl: item.track.external_urls.spotify,
-      }));
-    }
-
-    // 4. Manda tudo pro visual
     return res.status(200).json({
-      currentlyPlaying,
-      recentlyPlayed
+      isPlaying: song.is_playing,
+      title: song.item.name,
+      artist: song.item.artists.map((a) => a.name).join(', '),
+      albumImageUrl: song.item.album.images[0].url,
+      songUrl: song.item.external_urls.spotify,
     });
-
   } catch (error) {
-    return res.status(500).json({ error: 'Deu ruim ao buscar no Spotify' });
+    return res.status(200).json({ isPlaying: false });
   }
 }
