@@ -4,91 +4,243 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Som - Spotify</title>
+    <!-- Importando fonte premium do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); width: 320px; transition: transform 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        
-        .clickable-area { text-decoration: none; color: inherit; display: block; cursor: pointer; }
-        
-        img { width: 250px; height: 250px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); object-fit: cover; margin-bottom: 20px; }
-        h2 { margin: 0; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        p { margin: 5px 0 0 0; color: #b3b3b3; font-size: 1rem; }
-        .status { margin-bottom: 15px; font-size: 0.9rem; color: #1db954; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-        .offline { color: #888; }
-        
-        /* BOTÃO DO INSTAGRAM PREMIUM */
-        .social-container {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: center;
+        /* Reset e Fundo */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0f0f15 70%);
+            color: #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow: hidden;
         }
-        .insta-btn {
-            display: inline-flex;
+        
+        /* Efeitos de Luz no Fundo (estilo Spotify Canvas) */
+        .bg-glow {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(29, 185, 84, 0.12) 0%, rgba(0,0,0,0) 70%);
+            top: -200px; left: -200px;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+            animation: pulseGlow 8s infinite alternate;
+        }
+        .bg-glow-2 {
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(225, 48, 108, 0.08) 0%, rgba(0,0,0,0) 70%);
+            bottom: -150px; right: -150px;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+            animation: pulseGlow 10s infinite alternate-reverse;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* Card Principal de Vidro (Glassmorphism) */
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 28px; 
+            padding: 40px 35px; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            width: 380px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative;
+            z-index: 1;
+        }
+        .card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2); 
+            border-color: rgba(255,255,255,0.1); 
+        }
+        
+        .clickable-area { text-decoration: none; color: inherit; display: block; cursor: pointer; outline: none; }
+        
+        /* Status com Equalizador Animado */
+        .status-container {
+            display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white;
-            border-radius: 30px;
-            font-weight: bold;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 18px;
+            border-radius: 20px;
+            width: max-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .status-text { font-size: 0.85rem; color: #1db954; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
+        .offline .status-text { color: #888; }
+        
+        /* As barrinhas de som */
+        .equalizer { display: flex; gap: 3px; height: 12px; align-items: flex-end; }
+        .equalizer span { width: 3px; background-color: #1db954; border-radius: 3px; display: inline-block; animation: eq 1s ease-in-out infinite; }
+        .equalizer span:nth-child(2) { animation-delay: 0.2s; }
+        .equalizer span:nth-child(3) { animation-delay: 0.4s; }
+        .offline .equalizer span { animation: none; height: 3px; background-color: #888; }
+
+        @keyframes eq {
+            0%, 100% { height: 4px; }
+            50% { height: 12px; }
+        }
+        
+        /* Capa do Álbum e Textos */
+        .art-wrapper { position: relative; width: 260px; height: 260px; margin: 0 auto 25px auto; }
+        img { width: 100%; height: 100%; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); object-fit: cover; z-index: 2; position: relative; transition: transform 0.3s; }
+        .card:hover img { transform: scale(1.03); }
+        
+        /* O brilho colorido atrás da capa */
+        .art-glow {
+            position: absolute; top: 10%; left: 5%; width: 90%; height: 90%;
+            background: inherit; filter: blur(25px); opacity: 0.6; z-index: 1;
+            transition: opacity 0.3s;
+        }
+        
+        h2 { margin: 0; font-size: 1.5rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; }
+        p { margin: 6px 0 0 0; color: #a0a0a0; font-size: 1rem; font-weight: 600; }
+        
+        /* Seção dos Botões Sociais */
+        .social-container {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 24px;
+            border-radius: 16px;
+            font-weight: 800;
             font-size: 0.95rem;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3);
+            width: 100%;
+            color: white;
+            position: relative;
+        }
+        
+        /* Botão Spotify Premium */
+        .spotify-btn {
+            background-color: #1ed760;
+            color: #000;
+            box-shadow: 0 8px 20px rgba(30, 215, 96, 0.2);
+        }
+        .spotify-btn:hover {
+            background-color: #1fdf64;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(30, 215, 96, 0.4);
+        }
+        .spotify-btn svg { fill: #000; width: 24px; height: 24px; }
+
+        /* Botão Instagram Premium */
+        .insta-btn {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            box-shadow: 0 8px 20px rgba(220, 39, 67, 0.2);
         }
         .insta-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(220, 39, 67, 0.5);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(220, 39, 67, 0.4);
             filter: brightness(1.1);
         }
-        .insta-icon {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-        }
+        .insta-btn svg { fill: white; width: 24px; height: 24px; }
+        
     </style>
 </head>
 <body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+    
     <div class="card" id="spotify-card">
-        <!-- ÁREA CLICÁVEL DA MÚSICA -->
+        <!-- ÁREA DA MÚSICA -->
         <a id="song-link" href="#" target="_blank" class="clickable-area">
-            <div class="status" id="status-text">Carregando...</div>
-            <img id="album-art" src="" alt="Capa">
+            <div class="status-container" id="status-box">
+                <div class="equalizer"><span></span><span></span><span></span></div>
+                <div class="status-text" id="status-text">Carregando...</div>
+            </div>
+            
+            <div class="art-wrapper">
+                <div class="art-glow" id="art-glow"></div>
+                <img id="album-art" src="" alt="Capa">
+            </div>
+            
             <h2 id="title">Procurando música</h2>
             <p id="artist">Aguarde...</p>
         </a>
         
-        <!-- BOTÃO DO INSTAGRAM -->
+        <!-- ÁREA DOS BOTÕES -->
         <div class="social-container">
-            <a href="https://www.instagram.com/oggdann/" target="_blank" class="insta-btn">
-                <svg class="insta-icon" viewBox="0 0 24 24">
+            <!-- Botão Spotify -->
+            <a href="https://open.spotify.com/user/dq78sjzflg084c1ibpjuo8gjc?si=4d2bb77cf773400d" target="_blank" class="btn spotify-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.54.659.3 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15.001 10.62 18.661 12.9c.42.24.54.84.3 1.14zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                Meu Spotify
+            </a>
+            
+            <!-- Botão Instagram -->
+            <a href="https://www.instagram.com/oggdann/" target="_blank" class="btn insta-btn">
+                <svg viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                 </svg>
                 @oggdann
             </a>
         </div>
     </div>
+    
     <script>
         async function getSpotify() {
             try {
                 const res = await fetch('/api/musica');
                 const data = await res.json();
+                
+                const statusBox = document.getElementById('status-box');
+                const statusText = document.getElementById('status-text');
+                const albumArt = document.getElementById('album-art');
+                const artGlow = document.getElementById('art-glow');
+                
                 if (data.isPlaying) {
-                    document.getElementById('status-text').innerText = "🎶 Ouvindo agora";
-                    document.getElementById('status-text').classList.remove('offline');
-                    document.getElementById('album-art').src = data.albumImageUrl;
+                    statusText.innerText = "Ouvindo agora";
+                    statusBox.classList.remove('offline');
+                    
+                    albumArt.src = data.albumImageUrl;
+                    // A mágica que puxa a cor da capa pro brilho de fundo
+                    artGlow.style.background = `url(${data.albumImageUrl}) center/cover no-repeat`;
+                    
                     document.getElementById('title').innerText = data.title;
                     document.getElementById('artist').innerText = data.artist;
                     document.getElementById('song-link').href = data.songUrl;
                 } else {
-                    document.getElementById('status-text').innerText = "💤 Offline no momento";
-                    document.getElementById('status-text').classList.add('offline');
+                    statusText.innerText = "Offline no momento";
+                    statusBox.classList.add('offline');
+                    
+                    albumArt.src = "https://i.scdn.co/image/ab6761610000e5ebb2b3781297d21b444b023fbc"; 
+                    artGlow.style.background = "none";
+                    
                     document.getElementById('title').innerText = "Nenhuma música";
                     document.getElementById('artist').innerText = "O silêncio também é música";
-                    document.getElementById('song-link').href = "https://spotify.com";
+                    document.getElementById('song-link').href = "https://open.spotify.com/user/dq78sjzflg084c1ibpjuo8gjc?si=4d2bb77cf773400d";
                 }
             } catch (err) { console.error(err); }
         }
