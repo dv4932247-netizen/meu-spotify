@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Som - Spotify</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); width: 320px; transition: transform 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        img { width: 250px; height: 250px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); object-fit: cover; margin-bottom: 20px; }
+        h2 { margin: 0; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        p { margin: 5px 0 0 0; color: #b3b3b3; font-size: 1rem; }
+        .status { margin-bottom: 15px; font-size: 0.9rem; color: #1db954; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        a { text-decoration: none; color: inherit; }
+        .offline { color: #888; }
+    </style>
+</head>
+<body>
+    <a id="song-link" href="#" target="_blank">
+        <div class="card" id="spotify-card">
+            <div class="status" id="status-text">Carregando...</div>
+            <img id="album-art" src="https://i.scdn.co/image/ab6761610000e5ebb2b3781297d21b444b023fbc" alt="Capa">
+            <h2 id="title">Procurando música</h2>
+            <p id="artist">Aguarde...</p>
+        </div>
+    </a>
+
+    <script>
+        async function getSpotify() {
+            try {
+                const res = await fetch('/api/musica');
+                const data = await res.json();
+                
+                if (data.isPlaying) {
+                    document.getElementById('status-text').innerText = "🎶 Ouvindo agora";
+                    document.getElementById('status-text').classList.remove('offline');
+                    document.getElementById('album-art').src = data.albumImageUrl;
+                    document.getElementById('title').innerText = data.title;
+                    document.getElementById('artist').innerText = data.artist;
+                    document.getElementById('song-link').href = data.songUrl;
+                } else {
+                    document.getElementById('status-text').innerText = "💤 Offline no momento";
+                    document.getElementById('status-text').classList.add('offline');
+                    document.getElementById('title').innerText = "Nenhuma música";
+                    document.getElementById('artist').innerText = "O silêncio também é música";
+                    document.getElementById('song-link').href = "https://spotify.com";
+                }
+            } catch (err) { console.error(err); }
+        }
+        getSpotify();
+        setInterval(getSpotify, 5000); // Atualiza o site sozinho a cada 5 segundos
+    </script>
+</body>
+</html>
